@@ -1,5 +1,5 @@
 import java.sql.*;
-
+import com.mysql.jdbc.*;
 public class MySqlGest {
 
     // Var:
@@ -8,9 +8,9 @@ public class MySqlGest {
 
     // PRE: Database created is required
     public boolean getConnection (String user, String pass, String db) {
-        String driver = "com.mysql.jbdc.Driver";
+        String driver = "com.mysql.jdbc.Driver";
         String serverAddress = "localhost:3306";
-        String url = "jbdc:mysql://"+serverAddress+"/"+db;
+        String url = "jdbc:mysql://"+serverAddress+"/"+db;
         try{
             conn = DriverManager.getConnection(url,user,pass);
             return true;
