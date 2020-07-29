@@ -1,5 +1,7 @@
+package MySqlGest;
+
 import java.sql.*;
-import com.mysql.jdbc.*;
+
 public class MySqlGest {
 
     // Var:
@@ -16,7 +18,7 @@ public class MySqlGest {
             return true;
         }
         catch (SQLException e){
-            System.err.println("Error in connection/n More info: "+e.getMessage());
+            System.err.println("Error in connection.\nMore info: "+e.getMessage());
             return false;
         }
 
@@ -29,7 +31,7 @@ public class MySqlGest {
             return true;
         }
         catch (SQLException e){
-            System.err.println("Error during disconnect/n More info: "+e.getMessage());
+            System.err.println("Error during disconnect.\nMore info: "+e.getMessage());
             return false;
         }
 
@@ -46,7 +48,7 @@ public class MySqlGest {
 
         }
         catch (SQLException e){
-            System.err.println("Error doing query/n More info: "+e.getMessage());
+            System.err.println("Error doing query.\nMore info: "+e.getMessage());
             return false;
         }
 
@@ -60,15 +62,18 @@ public class MySqlGest {
             return true;
         }
         catch (SQLException e){
-            System.err.println("Error doing update/n More info: "+e.getMessage());
+            System.err.println("Error doing update.\nMore info: "+e.getMessage());
             return false;
         }
 
     }
 
 
-    private void showIt(ResultSet rs) {
-        //TO-DO
+    private void showIt(ResultSet rs) throws SQLException {
+        while(!rs.isAfterLast()){
+            String row="";
+            System.out.println(rs.getRow()+" "+row);
+        }
     }
 
 
