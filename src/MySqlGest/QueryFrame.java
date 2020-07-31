@@ -5,7 +5,6 @@ import java.awt.*;
 
 public class QueryFrame extends JFrame {
     static JTextArea con;
-
     public QueryFrame() {
         // Frame:
         setSize(800, 500);
@@ -17,12 +16,8 @@ public class QueryFrame extends JFrame {
         // Icon:
         Image image = new ImageIcon("src/Images/myPassion.jpg").getImage();
         setIconImage(image);
-
         // "Console":
-
         con = new JTextArea();
         add(con);
-
     }
-
 }
