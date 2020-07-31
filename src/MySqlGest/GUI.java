@@ -11,11 +11,3 @@ public class GUI {
         query = new QueryFrame();
     }
 }
-
-
-
-
-
-
-
-
