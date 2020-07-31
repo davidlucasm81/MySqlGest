@@ -4,10 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 public class PrincipalFrame extends JFrame implements ActionListener {
     String address = null;
     PrincipalPanel panel = new PrincipalPanel();
+
     public PrincipalFrame() {
         // Initial Panel:
         add(panel);
@@ -27,58 +30,38 @@ public class PrincipalFrame extends JFrame implements ActionListener {
         Image image = new ImageIcon("src/Images/myPassion.jpg").getImage();
         setIconImage(image);
     }
+
     public void actionPerformed(ActionEvent e) {
         Object action = e.getSource();
         if (panel.connected) {
             if (action == panel.disconnect) {
                 int cont = 0;
                 do {
-                    System.out.println("Disconecting...");
+                    QueryFrame.con.append("Disconecting...\n");
                     cont++;
                 }
                 while (!(GUI.gest.disconnect()) && cont < 3);
-                System.exit(0);
+                    System.exit(0);
+
+
             }
             if (action == panel.query) {
-                //TODO
+                GUI.gest.doQuery(panel.textQuery.getText());
+                panel.textQuery.setText("");
+                GUI.query.setVisible(true);
+                setLocationRelativeTo(null);
+                setLocation(getX() - 550, getY() - 85);
             }
             if (action == panel.update) {
-                //TODO
+                GUI.gest.doUpdate(panel.textUpdate.getText());
+                panel.textUpdate.setText("");
+                GUI.query.setVisible(true);
+                setLocationRelativeTo(null);
+                setLocation(getX() - 550, getY() - 85);
             }
         } else {
-            if (action == panel.buttonSignIn) { // Initial Button Code
-                address = (address == null) ? panel.ip.getText() + ":" + panel.port.getText() : address;
-                boolean res = GUI.gest.getConnection(panel.user.getText(), panel.pass.getText(), panel.db.getText(), address);
-                String msj;
-                if (res) {
-                    msj = "Connected to " + panel.db.getText();
-                    panel.c = Color.GREEN;
-                    panel.setBackground(panel.c);
-
-                    panel.remove(panel.buttonSignIn);
-                    panel.remove(panel.user);
-                    panel.remove(panel.pass);
-                    panel.remove(panel.db);
-                    panel.remove(panel.ip);
-                    panel.remove(panel.port);
-                    panel.remove(panel.localhost);
-
-                    panel.add(panel.disconnect);
-                    GUI.query.setVisible(true);
-                    setSize(300, 500);
-                    setLocation(0, 180);
-                    panel.connected = true;
-                } else {
-                    msj = "Not Connected";
-                    if (panel.error)
-                        panel.c = panel.c.darker();
-                    else {
-                        panel.c = Color.RED;
-                        panel.error = true;
-                    }
-                    panel.setBackground(panel.c);
-                }
-                panel.msj = msj;
+            if (action == panel.buttonSignIn) {
+                connect();
             }
             if (action == panel.localhost) {
                 if (address == null) {
@@ -93,4 +76,47 @@ public class PrincipalFrame extends JFrame implements ActionListener {
             }
         }
     }
+
+    private void connect() { // Initial Button Code
+        address = (address == null) ? panel.ip.getText() + ":" + panel.port.getText() : address;
+        boolean res = GUI.gest.getConnection(panel.user.getText(), panel.pass.getText(), panel.db.getText(), address);
+        String msj;
+        if (res) {
+            msj = "Connected to " + panel.db.getText();
+            panel.c = Color.GREEN;
+            panel.setBackground(panel.c);
+
+            panel.remove(panel.buttonSignIn);
+            panel.remove(panel.user);
+            panel.remove(panel.pass);
+            panel.remove(panel.db);
+            panel.remove(panel.ip);
+            panel.remove(panel.port);
+            panel.remove(panel.localhost);
+
+            panel.add(panel.disconnect);
+            panel.add(panel.textQuery);
+            panel.add(panel.textUpdate);
+            panel.add(panel.query);
+            panel.add(panel.update);
+
+
+            GUI.query.setVisible(true);
+            setLocation(getX() - 550, getY() - 85);
+            setSize(300, 500);
+            panel.connected = true;
+        } else {
+            msj = "Not Connected";
+            if (panel.error)
+                panel.c = panel.c.darker();
+            else {
+                panel.c = Color.RED;
+                panel.error = true;
+            }
+            panel.setBackground(panel.c);
+        }
+        panel.msj = msj;
+    }
+
 }
+

@@ -12,6 +12,7 @@ public class MySqlGest {
         try {
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, pass);
+            QueryFrame.con.append("Connect!\n");
             return true;
         } catch (SQLException e) {
             QueryFrame.con.append("Error in connection.\nMore info: " + e.getMessage() + "\n");
@@ -25,6 +26,7 @@ public class MySqlGest {
     public boolean disconnect() {
         try {
             conn.close();
+            QueryFrame.con.append("Disconnect!\n");
             return true;
         } catch (SQLException e) {
             QueryFrame.con.append("Error during disconnect.\nMore info: " + e.getMessage() + "\n");
@@ -41,6 +43,7 @@ public class MySqlGest {
             showIt(rs);
             rs.close();
             st.close();
+            QueryFrame.con.append("Query Done!\n");
             return true;
         } catch (SQLException e) {
             QueryFrame.con.append("Error doing query.\nMore info: " + e.getMessage() + "\n");
@@ -52,6 +55,7 @@ public class MySqlGest {
             PreparedStatement pst = conn.prepareStatement(update);
             pst.executeUpdate();
             pst.close();
+            QueryFrame.con.append("Update Done!\n");
             return true;
         } catch (SQLException e) {
             QueryFrame.con.append("Error doing update.\nMore info: " + e.getMessage() + "\n");
@@ -59,9 +63,26 @@ public class MySqlGest {
         }
     }
     private void showIt(ResultSet rs) throws SQLException {
-        while (!rs.isAfterLast()) {
-            String row = "";
-            QueryFrame.con.append(rs.getRow() + " " + row + "\n");
+        String columnNames="";
+        QueryFrame.con.append("         ");
+        String space="                         ";
+        for(int i=1;i<=rs.getMetaData().getColumnCount();i++) {
+            String name=rs.getMetaData().getColumnName(i);
+            int number=(name.length()%2==0)?name.length() : name.length()+1;
+            String newSpace=space.substring(number/2);
+            columnNames+=newSpace+name+newSpace;
         }
+        QueryFrame.con.append(columnNames+"\n");
+        while (rs.next()) {
+            QueryFrame.con.append("Row: "+rs.getRow());
+            for(int i=1;i<=rs.getMetaData().getColumnCount();i++){
+                String element=rs.getObject(i).toString();
+                int number=(element.length()%2==0)?element.length() : element.length()+1;
+                String newSpace=space.substring(number/2);
+                QueryFrame.con.append(newSpace+element+newSpace);
+            }
+            QueryFrame.con.append("\n");
+        }
+
     }
 }

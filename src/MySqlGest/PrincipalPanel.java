@@ -2,6 +2,7 @@ package MySqlGest;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class PrincipalPanel extends JPanel {
     JButton buttonSignIn = new JButton("Submit");
@@ -19,12 +20,12 @@ public class PrincipalPanel extends JPanel {
     JTextField textQuery = new JTextField();
     JTextField textUpdate = new JTextField();
 
+
     String msj;
     boolean connected = false;
     boolean error = false;
     Color c;
     public PrincipalPanel() {
-        msj = "Welcome to MySqlGest";
 
         c = Color.ORANGE;
         setBackground(c);
@@ -50,11 +51,16 @@ public class PrincipalPanel extends JPanel {
         Font myFont = new Font("Comic Sans", Font.BOLD, 15); // Yep, comic sans
         g.setColor(Color.BLACK);
         g.setFont(myFont);
-        // Principal Text:
-        g.drawString(msj, 135 - msj.length() * 4, 60);
+
         // First Window:
         if (!connected) {
             //Text:
+            if(msj==null){
+                g.drawString("Welcome to MySqlGest", 65, 60);
+            }
+            else{
+                g.drawString(msj, 103-msj.length(), 60);
+            }
             g.drawString("User: ", 25, 95);
             g.drawString("Pass: ", 25, 125);
             g.drawString("DB: ", 25, 155);
@@ -64,15 +70,33 @@ public class PrincipalPanel extends JPanel {
             user.setBounds(70, 80, 150, 20);
             pass.setBounds(70, 110, 150, 20);
             db.setBounds(70, 140, 150, 20);
+
+
             //Address TextField:
             localhost.setBounds(100, 210, 90, 12);
             localhost.setBackground(c);
             ip.setBounds(70, 180, 90, 20);
             port.setBounds(170, 180, 50, 20);
+
             //Initial Button:
             buttonSignIn.setBounds(100, 240, 80, 21);
         }
-        // Disconnect Button:
-        disconnect.setBounds(90, 220, 100, 21);
+        else{
+            //Text:
+            g.drawString(msj, 83-msj.length()*2, 60);
+            // Buttons:
+            disconnect.setBounds(90, 250, 100, 21);
+            query.setBounds(80,120,120,21);
+            update.setBounds(80,180,120,21);
+
+            //TextField:
+            textQuery.setBounds(45,90,200,21);
+            textUpdate.setBounds(45,150,200,21);
+
+            textQuery.setHorizontalAlignment(JTextField.CENTER);
+            textUpdate.setHorizontalAlignment(JTextField.CENTER);
+
+        }
+
     }
 }
