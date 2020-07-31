@@ -62,7 +62,7 @@ public class MySqlGest {
             return false;
         }
     }
-    private void showIt(ResultSet rs) throws SQLException {
+    private void showIt(ResultSet rs) throws SQLException { //MEJORAR
         String columnNames="";
         QueryFrame.con.append("         ");
         String space="                         ";
