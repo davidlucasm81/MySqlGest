@@ -3,11 +3,8 @@ package MySqlGest;
 import java.sql.*;
 
 public class MySqlGest {
-
     // Var:
-
     private Connection conn;
-
     // PRE: Database created is required
     public boolean getConnection(String user, String pass, String db, String address) {
         String driver = "com.mysql.cj.jdbc.Driver";
@@ -25,7 +22,6 @@ public class MySqlGest {
             return false;
         }
     }
-
     public boolean disconnect() {
         try {
             conn.close();
@@ -37,9 +33,7 @@ public class MySqlGest {
             QueryFrame.con.append("You can not disconnect if you dont get a connection.\nMore info: " + f.getMessage() + "\n");
             return false;
         }
-
     }
-
     public boolean doQuery(String query) {
         try {
             Statement st = conn.createStatement();
@@ -48,14 +42,11 @@ public class MySqlGest {
             rs.close();
             st.close();
             return true;
-
         } catch (SQLException e) {
             QueryFrame.con.append("Error doing query.\nMore info: " + e.getMessage() + "\n");
             return false;
         }
-
     }
-
     public boolean doUpdate(String update) {
         try {
             PreparedStatement pst = conn.prepareStatement(update);
@@ -66,16 +57,11 @@ public class MySqlGest {
             QueryFrame.con.append("Error doing update.\nMore info: " + e.getMessage() + "\n");
             return false;
         }
-
     }
-
-
     private void showIt(ResultSet rs) throws SQLException {
         while (!rs.isAfterLast()) {
             String row = "";
             QueryFrame.con.append(rs.getRow() + " " + row + "\n");
         }
     }
-
-
 }
