@@ -25,13 +25,17 @@ public class MySqlGest {
 
     }
 
-    public boolean desconnect (){
+    public boolean disconnect(){
         try{
             conn.close();
             return true;
         }
         catch (SQLException e){
             System.err.println("Error during disconnect.\nMore info: "+e.getMessage());
+            return false;
+        }
+        catch (NullPointerException f){
+            System.err.println("You can not disconnect if you dont get a connection.\nMore info: "+f.getMessage());
             return false;
         }
 

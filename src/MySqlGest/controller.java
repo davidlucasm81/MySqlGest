@@ -54,7 +54,7 @@ public class controller {
                        System.out.println("Disconecting...");
                        cont++;
                     }
-                    while(!(disc=gest.desconnect()) && cont<3);
+                    while(!(disc=gest.disconnect()) && cont<3);
                     System.out.println("Disconect succesfull! Bye bye");
                     break;
                 default:
