@@ -5,17 +5,18 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class GUI {
+    static MySqlGest gest;
     public static void main(String[] args) {
-        MFrame principal = new MFrame();
+        gest = new MySqlGest();
+        PrincipalFrame principal = new PrincipalFrame();
     }
 }
-class MFrame extends JFrame implements ActionListener {
-    MPanel firstPanel = new MPanel(1);
-    MPanel secondPanel = new MPanel(2);
-    public MFrame(){
+class PrincipalFrame extends JFrame implements ActionListener {
+    PrincipalPanel panel = new PrincipalPanel();
+    public PrincipalFrame(){
         // Initial Panel:
-        add(firstPanel);
-        firstPanel.buttonSubmit.addActionListener(this);
+        add(panel);
+        panel.buttonSignIn.addActionListener(this);
         // Just frame:
         setSize(400,500);
         setVisible(true);
@@ -28,40 +29,57 @@ class MFrame extends JFrame implements ActionListener {
         setIconImage(image);
     }
     public void actionPerformed(ActionEvent e){
-        Object button= e.getSource();
-        if(button==firstPanel.buttonSubmit){
-            remove(firstPanel);
-            add(secondPanel);
+        Object action= e.getSource();
+        if(action==panel.buttonSignIn){ // Initial Button Code
+            boolean res= GUI.gest.getConnection(panel.user.getText(),panel.pass.getText(),panel.db.getText());
+            String msj;
+            if(res){
+                msj="Connected";
+                panel.c=Color.GREEN;
+                panel.setBackground(panel.c);
+                panel.remove(panel.buttonSignIn);
+                panel.remove(panel.user);
+                panel.remove(panel.pass);
+                panel.remove(panel.db);
+            }
+            else{
+                msj="Not Connected";
+                panel.c=Color.RED;
+                panel.setBackground(panel.c);
+            }
+            panel.msj=msj;
         }
     }
 }
- class MPanel extends JPanel {
-    JButton buttonSubmit = new JButton("prueba");
-    private int numPanel=-1;
-    public MPanel (int numPanel){
-        this.numPanel=numPanel;
-        switch(numPanel){
-            case 1:
-                setBackground(Color.ORANGE);
-                add(buttonSubmit);
-                break;
-            case 2:
-                setBackground(Color.BLACK);
-                break;
-        }
+ class PrincipalPanel extends JPanel {
+    JButton buttonSignIn = new JButton("Submit");
+    JTextField user = new JTextField();
+    JTextField pass = new JTextField();
+    JTextField db = new JTextField();
+    String msj;
+    Color c;
+    public PrincipalPanel(){
+        msj="Welcome to MySqlGest";
+        c=Color.ORANGE;
+        setBackground(c);
+        add(buttonSignIn);
         setForeground(Color.WHITE);
+        add(user);
+        add(pass);
+        add(db);
     }
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         Font myFont = new Font("Comic Sans",Font.BOLD,20); // Yep, comic sans
         g.setFont(myFont);
-        switch (numPanel){
-            case 1:
-                g.drawString("Graphic design is my passion!",40,40);
-                break;
-            case 2:
-                g.drawString("Or not",40,40);
-                break;
+        g.drawString(msj,60,60);
+
+        //Initial TextField:
+        user.setBounds(60,80,150,20);
+        pass.setBounds(60,110,150,20);
+        db.setBounds(60,140,150,20);
+
+
         }
     }
-}
+
