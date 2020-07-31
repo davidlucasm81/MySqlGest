@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 public class PrincipalFrame extends JFrame implements ActionListener {
     String address = null;
     PrincipalPanel panel = new PrincipalPanel();
-
     public PrincipalFrame() {
         // Initial Panel:
         add(panel);
@@ -28,7 +27,6 @@ public class PrincipalFrame extends JFrame implements ActionListener {
         Image image = new ImageIcon("src/Images/myPassion.jpg").getImage();
         setIconImage(image);
     }
-
     public void actionPerformed(ActionEvent e) {
         Object action = e.getSource();
         if (panel.connected) {
@@ -42,10 +40,10 @@ public class PrincipalFrame extends JFrame implements ActionListener {
                 System.exit(0);
             }
             if (action == panel.query) {
-
+                //TODO
             }
             if (action == panel.update) {
-
+                //TODO
             }
         } else {
             if (action == panel.buttonSignIn) { // Initial Button Code
@@ -92,7 +90,6 @@ public class PrincipalFrame extends JFrame implements ActionListener {
                     panel.port.setBackground(Color.WHITE);
                     address = null;
                 }
-
             }
         }
     }
