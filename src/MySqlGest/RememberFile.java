@@ -11,10 +11,10 @@ public class RememberFile {
 
     public RememberFile(String user, String pass, String database, String address) {
         try {
-            remember = new File("remember.txt");
+            remember = new File("internalFiles/remember.txt");
             remember.delete();
             remember.createNewFile();
-            BufferedWriter writer = new BufferedWriter(new FileWriter("remember.txt"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("internalFiles/remember.txt"));
             writer.write(user + "\n" + pass + "\n" + database + "\n" + address + "\n");
             writer.close();
 

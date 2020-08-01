@@ -14,7 +14,7 @@ public class PrincipalPanel extends JPanel {
     JCheckBox remember = new JCheckBox("Remember");
 
     JTextField user = new JTextField();
-    JTextField pass = new JTextField();
+    JPasswordField pass = new JPasswordField();
     JTextField db = new JTextField();
     JTextField ip = new JTextField();
     JTextField port = new JTextField();
@@ -22,6 +22,8 @@ public class PrincipalPanel extends JPanel {
     JTextField textQuery = new JTextField();
     JTextField textUpdate = new JTextField();
 
+    JButton queryLog= new JButton();
+    JButton updateLog= new JButton();
 
     String msj;
     boolean connected = false;
@@ -99,11 +101,26 @@ public class PrincipalPanel extends JPanel {
         }
         else{
             //Text:
-            g.drawString(msj, 83-msj.length()*2, 60);
+            g.drawString(msj, Math.max(75-msj.length()/2,1), 60);
             // Buttons:
             disconnect.setBounds(90, 250, 100, 21);
             query.setBounds(80,120,120,21);
             update.setBounds(80,180,120,21);
+
+            queryLog.setBounds(210,120,21,21);
+            ImageIcon iconQuery=new ImageIcon("src/Images/queryIcon.jpg");
+            Image img = iconQuery.getImage() ;
+            Image newimg = img.getScaledInstance( queryLog.getWidth(), queryLog.getHeight(),  java.awt.Image.SCALE_SMOOTH ) ;
+            iconQuery = new ImageIcon( newimg );
+            queryLog.setIcon(iconQuery);
+
+            updateLog.setBounds(210,180,21,21);
+            iconQuery=new ImageIcon("src/Images/updateIcon.jpg");
+            img = iconQuery.getImage() ;
+            newimg = img.getScaledInstance( updateLog.getWidth(), updateLog.getHeight(),  java.awt.Image.SCALE_SMOOTH ) ;
+            iconQuery = new ImageIcon( newimg );
+            updateLog.setIcon(iconQuery);
+
 
             //TextField:
             textQuery.setBounds(45,90,200,21);

@@ -104,10 +104,9 @@ public class MySqlGest {
         table.setPreferredScrollableViewportSize(table.getPreferredSize());
         JScrollPane scrollPane = new JScrollPane(table);
         TableFrame frame = new TableFrame();
-
         frame.add(scrollPane, BorderLayout.CENTER);
-        frame.setSize(200*rs.getMetaData().getColumnCount(),40*row);
-
+        frame.setSize(200*rs.getMetaData().getColumnCount(),Math.min(30*row,30*30));
+        frame.setLocationRelativeTo(null);
 
     }
 }

@@ -6,16 +6,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 
 public class PrincipalFrame extends JFrame implements ActionListener {
     String address = null;
     PrincipalPanel panel = new PrincipalPanel();
-    private boolean remember=false;
+    String db;
+
+
+    private boolean remember = false;
+
     public PrincipalFrame() {
         // Initial Panel:
         add(panel);
@@ -37,20 +38,19 @@ public class PrincipalFrame extends JFrame implements ActionListener {
         setIconImage(image);
 
         // Remember code:
-        File f=new File("remember.txt");
-        if(f.exists()){
-                try{
-                    BufferedReader reader = new BufferedReader(new FileReader("remember.txt"));
-                    panel.user.setText(reader.readLine());
-                    panel.pass.setText(reader.readLine());
-                    panel.db.setText(reader.readLine());
-                    String address=reader.readLine();
-                    panel.ip.setText(address.substring(0,address.length()-5));
-                    panel.port.setText(address.substring(address.length()-4,address.length()));
-                }
-                catch (IOException e){
-                    PrincipalPanel.con.append("Cannot Read\n");
-                }
+        File f = new File("internalFiles/remember.txt");
+        if (f.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader("internalFiles/remember.txt"));
+                panel.user.setText(reader.readLine());
+                panel.pass.setText(reader.readLine());
+                panel.db.setText(reader.readLine());
+                String address = reader.readLine();
+                panel.ip.setText(address.substring(0, address.length() - 5));
+                panel.port.setText(address.substring(address.length() - 4, address.length()));
+            } catch (IOException e) {
+                PrincipalPanel.con.append("Cannot Read\n");
+            }
         }
 
     }
@@ -66,19 +66,19 @@ public class PrincipalFrame extends JFrame implements ActionListener {
                     cont++;
                 }
                 while (!(GUI.gest.disconnect()) && cont < 3);
-                    System.exit(0);
+                System.exit(0);
 
 
             }
             if (action == panel.query) {
-                GUI.gest.doQuery(panel.textQuery.getText());
+                String query = panel.textQuery.getText();
+                GUI.gest.doQuery(query);
                 panel.textQuery.setText("");
-                setLocationRelativeTo(null);
             }
             if (action == panel.update) {
-                GUI.gest.doUpdate(panel.textUpdate.getText());
+                String update = panel.textUpdate.getText();
+                GUI.gest.doUpdate(update);
                 panel.textUpdate.setText("");
-                setLocationRelativeTo(null);
             }
         } else {
             if (action == panel.buttonSignIn) {
@@ -96,23 +96,23 @@ public class PrincipalFrame extends JFrame implements ActionListener {
                     address = null;
                 }
             }
-            if(action == panel.remember){
-                remember=!remember;
+            if (action == panel.remember) {
+                remember = !remember;
             }
         }
     }
 
     private void connect() { // Initial Button Code
         address = (address == null) ? panel.ip.getText() + ":" + panel.port.getText() : address;
-        String user=panel.user.getText();
-        String pass=panel.pass.getText();
-        String db=panel.db.getText();
-        boolean res = GUI.gest.getConnection(user,pass,db, address);
+        String user = panel.user.getText();
+        String pass = panel.pass.getText();
+        db = panel.db.getText();
+        boolean res = GUI.gest.getConnection(user, pass, db, address);
         String msj;
         if (res) {
 
-            if(remember){
-                RememberFile file = new RememberFile(user,pass,db,address);
+            if (remember) {
+                RememberFile file = new RememberFile(user, pass, db, address);
             }
 
             msj = "Connected to " + panel.db.getText();
@@ -133,6 +133,8 @@ public class PrincipalFrame extends JFrame implements ActionListener {
             panel.add(panel.textUpdate);
             panel.add(panel.query);
             panel.add(panel.update);
+            panel.add(panel.queryLog);
+            panel.add(panel.updateLog);
 
 
             setLocationRelativeTo(null);
