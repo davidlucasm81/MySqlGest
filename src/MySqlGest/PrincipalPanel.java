@@ -25,6 +25,8 @@ public class PrincipalPanel extends JPanel {
     boolean connected = false;
     boolean error = false;
     Color c;
+
+    static JTextArea con;
     public PrincipalPanel() {
 
         c = Color.ORANGE;
@@ -45,13 +47,19 @@ public class PrincipalPanel extends JPanel {
         add(user);
         add(pass);
         add(db);
+        //Connection
+        con = new JTextArea();
+        add(con);
+        con.setFocusable(false);
+        con.setBackground(c);
+        con.setForeground(Color.BLACK);
     }
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Font myFont = new Font("Comic Sans", Font.BOLD, 15); // Yep, comic sans
         g.setColor(Color.BLACK);
         g.setFont(myFont);
-
+        con.setBackground(c);
         // First Window:
         if (!connected) {
             //Text:
@@ -80,6 +88,9 @@ public class PrincipalPanel extends JPanel {
 
             //Initial Button:
             buttonSignIn.setBounds(100, 240, 80, 21);
+
+            //Connection:
+            con.setBounds(10,325,280,100);
         }
         else{
             //Text:
@@ -95,6 +106,9 @@ public class PrincipalPanel extends JPanel {
 
             textQuery.setHorizontalAlignment(JTextField.CENTER);
             textUpdate.setHorizontalAlignment(JTextField.CENTER);
+
+            //Connection:
+            con.setBounds(10,500,280,100);
 
         }
 

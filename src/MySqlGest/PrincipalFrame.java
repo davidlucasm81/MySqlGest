@@ -20,7 +20,7 @@ public class PrincipalFrame extends JFrame implements ActionListener {
         panel.update.addActionListener(this);
         panel.localhost.addActionListener(this);
         // Just frame:
-        setSize(300, 325);
+        setSize(300, 425);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("MySQLGest");
@@ -29,15 +29,18 @@ public class PrincipalFrame extends JFrame implements ActionListener {
         // Icon:
         Image image = new ImageIcon("src/Images/myPassion.jpg").getImage();
         setIconImage(image);
+        //Console:
+
     }
 
     public void actionPerformed(ActionEvent e) {
         Object action = e.getSource();
+        PrincipalPanel.con.setText("");
         if (panel.connected) {
             if (action == panel.disconnect) {
                 int cont = 0;
                 do {
-                    QueryFrame.con.append("Disconecting...\n");
+                    PrincipalPanel.con.append("Disconecting...\n");
                     cont++;
                 }
                 while (!(GUI.gest.disconnect()) && cont < 3);
@@ -48,16 +51,12 @@ public class PrincipalFrame extends JFrame implements ActionListener {
             if (action == panel.query) {
                 GUI.gest.doQuery(panel.textQuery.getText());
                 panel.textQuery.setText("");
-                GUI.query.setVisible(true);
                 setLocationRelativeTo(null);
-                setLocation(getX() - 550, getY() - 85);
             }
             if (action == panel.update) {
                 GUI.gest.doUpdate(panel.textUpdate.getText());
                 panel.textUpdate.setText("");
-                GUI.query.setVisible(true);
                 setLocationRelativeTo(null);
-                setLocation(getX() - 550, getY() - 85);
             }
         } else {
             if (action == panel.buttonSignIn) {
@@ -101,9 +100,8 @@ public class PrincipalFrame extends JFrame implements ActionListener {
             panel.add(panel.update);
 
 
-            GUI.query.setVisible(true);
-            setLocation(getX() - 550, getY() - 85);
-            setSize(300, 500);
+            setLocationRelativeTo(null);
+            setSize(300, 600);
             panel.connected = true;
         } else {
             msj = "Not Connected";
