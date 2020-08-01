@@ -6,11 +6,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
 
 public class PrincipalFrame extends JFrame implements ActionListener {
     String address = null;
     PrincipalPanel panel = new PrincipalPanel();
-
+    private boolean remember=false;
     public PrincipalFrame() {
         // Initial Panel:
         add(panel);
@@ -19,6 +24,7 @@ public class PrincipalFrame extends JFrame implements ActionListener {
         panel.query.addActionListener(this);
         panel.update.addActionListener(this);
         panel.localhost.addActionListener(this);
+        panel.remember.addActionListener(this);
         // Just frame:
         setSize(300, 425);
         setVisible(true);
@@ -29,7 +35,23 @@ public class PrincipalFrame extends JFrame implements ActionListener {
         // Icon:
         Image image = new ImageIcon("src/Images/myPassion.jpg").getImage();
         setIconImage(image);
-        //Console:
+
+        // Remember code:
+        File f=new File("remember.txt");
+        if(f.exists()){
+                try{
+                    BufferedReader reader = new BufferedReader(new FileReader("remember.txt"));
+                    panel.user.setText(reader.readLine());
+                    panel.pass.setText(reader.readLine());
+                    panel.db.setText(reader.readLine());
+                    String address=reader.readLine();
+                    panel.ip.setText(address.substring(0,address.length()-5));
+                    panel.port.setText(address.substring(address.length()-4,address.length()));
+                }
+                catch (IOException e){
+                    PrincipalPanel.con.append("Cannot Read\n");
+                }
+        }
 
     }
 
@@ -61,6 +83,7 @@ public class PrincipalFrame extends JFrame implements ActionListener {
         } else {
             if (action == panel.buttonSignIn) {
                 connect();
+
             }
             if (action == panel.localhost) {
                 if (address == null) {
@@ -73,14 +96,25 @@ public class PrincipalFrame extends JFrame implements ActionListener {
                     address = null;
                 }
             }
+            if(action == panel.remember){
+                remember=!remember;
+            }
         }
     }
 
     private void connect() { // Initial Button Code
         address = (address == null) ? panel.ip.getText() + ":" + panel.port.getText() : address;
-        boolean res = GUI.gest.getConnection(panel.user.getText(), panel.pass.getText(), panel.db.getText(), address);
+        String user=panel.user.getText();
+        String pass=panel.pass.getText();
+        String db=panel.db.getText();
+        boolean res = GUI.gest.getConnection(user,pass,db, address);
         String msj;
         if (res) {
+
+            if(remember){
+                RememberFile file = new RememberFile(user,pass,db,address);
+            }
+
             msj = "Connected to " + panel.db.getText();
             panel.c = Color.GREEN;
             panel.setBackground(panel.c);
@@ -92,6 +126,7 @@ public class PrincipalFrame extends JFrame implements ActionListener {
             panel.remove(panel.ip);
             panel.remove(panel.port);
             panel.remove(panel.localhost);
+            panel.remove(panel.remember);
 
             panel.add(panel.disconnect);
             panel.add(panel.textQuery);

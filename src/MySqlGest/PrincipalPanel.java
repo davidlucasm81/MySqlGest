@@ -9,7 +9,9 @@ public class PrincipalPanel extends JPanel {
     JButton query = new JButton("Do query");
     JButton update = new JButton("Do update");
     JButton disconnect = new JButton("Disconnect");
+
     JCheckBox localhost = new JCheckBox("Localhost");
+    JCheckBox remember = new JCheckBox("Remember");
 
     JTextField user = new JTextField();
     JTextField pass = new JTextField();
@@ -47,6 +49,7 @@ public class PrincipalPanel extends JPanel {
         add(user);
         add(pass);
         add(db);
+        add(remember);
         //Connection
         con = new JTextArea();
         add(con);
@@ -87,7 +90,9 @@ public class PrincipalPanel extends JPanel {
             port.setBounds(170, 180, 50, 20);
 
             //Initial Button:
-            buttonSignIn.setBounds(100, 240, 80, 21);
+            buttonSignIn.setBounds(50, 240, 80, 21);
+            remember.setBounds(140,245,100,12);
+            remember.setBackground(c);
 
             //Connection:
             con.setBounds(10,325,280,100);
