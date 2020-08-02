@@ -1,31 +1,40 @@
 package MySqlGest;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.*;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class PrincipalFrame extends JFrame implements ActionListener {
-    String address = null;
-    PrincipalPanel panel = new PrincipalPanel();
-    String db;
-
-
-    private boolean remember = false;
+    // Intern Atributes:
+    private String address;
+    private final PrincipalPanel panel;
+    private String db;
+    private LinkedList<String> queries;
+    private LinkedList<String> updates;
+    private boolean remember;
 
     public PrincipalFrame() {
+        // Creating atributes:
+        panel = new PrincipalPanel();
+        queries = new LinkedList<>();
+        updates = new LinkedList<>();
         // Initial Panel:
         add(panel);
-        panel.buttonSignIn.addActionListener(this);
-        panel.disconnect.addActionListener(this);
-        panel.query.addActionListener(this);
-        panel.update.addActionListener(this);
-        panel.localhost.addActionListener(this);
-        panel.remember.addActionListener(this);
+        // ActionListeners:
+        PrincipalPanel.buttonSignIn.addActionListener(this);
+        PrincipalPanel.disconnect.addActionListener(this);
+        PrincipalPanel.query.addActionListener(this);
+        PrincipalPanel.update.addActionListener(this);
+        PrincipalPanel.localhost.addActionListener(this);
+        PrincipalPanel.remember.addActionListener(this);
+        PrincipalPanel.queryLog.addActionListener(this);
+        PrincipalPanel.updateLog.addActionListener(this);
         // Just frame:
         setSize(300, 425);
         setVisible(true);
@@ -36,122 +45,196 @@ public class PrincipalFrame extends JFrame implements ActionListener {
         // Icon:
         Image image = new ImageIcon("src/Images/myPassion.jpg").getImage();
         setIconImage(image);
-
         // Remember code:
         File f = new File("internalFiles/remember.txt");
         if (f.exists()) {
             try {
                 BufferedReader reader = new BufferedReader(new FileReader("internalFiles/remember.txt"));
-                panel.user.setText(reader.readLine());
-                panel.pass.setText(reader.readLine());
-                panel.db.setText(reader.readLine());
+                PrincipalPanel.user.setText(reader.readLine());
+                PrincipalPanel.pass.setText(reader.readLine());
+                PrincipalPanel.db.setText(reader.readLine());
                 String address = reader.readLine();
-                panel.ip.setText(address.substring(0, address.length() - 5));
-                panel.port.setText(address.substring(address.length() - 4, address.length()));
+                PrincipalPanel.ip.setText(address.substring(0, address.length() - 5));
+                PrincipalPanel.port.setText(address.substring(address.length() - 4));
             } catch (IOException e) {
-                PrincipalPanel.con.append("Cannot Read\n");
+                PrincipalPanel.console.append("Cannot Read\n");
             }
         }
-
     }
 
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) { // It controls the response of the buttons, textfields ... etc
+        // Getting Action:
         Object action = e.getSource();
-        PrincipalPanel.con.setText("");
-        if (panel.connected) {
-            if (action == panel.disconnect) {
+        PrincipalPanel.console.setText("");
+        if (PrincipalPanel.connected) { // Connected to the database
+            if (PrincipalPanel.disconnect.equals(action)) { // Disconnecting code
                 int cont = 0;
                 do {
-                    PrincipalPanel.con.append("Disconecting...\n");
+                    PrincipalPanel.console.append("Disconecting...\n");
                     cont++;
                 }
                 while (!(GUI.gest.disconnect()) && cont < 3);
+                createLogs();
                 System.exit(0);
+            }
+            if (PrincipalPanel.query.equals(action)) { // Do query
+                String query = PrincipalPanel.textQuery.getText();
+                if (GUI.gest.doQuery(query))
+                    queries.addLast(query);
+                PrincipalPanel.textQuery.setText("");
+            }
+            if (PrincipalPanel.update.equals(action)) { // Do update
+                String update = PrincipalPanel.textUpdate.getText();
+                if (GUI.gest.doUpdate(update))
+                    updates.addLast(update);
+                PrincipalPanel.textUpdate.setText("");
+            }
+            if (PrincipalPanel.queryLog.equals(action)) { // Get queryLog
+                viewLogs("query");
+            }
+            if (PrincipalPanel.updateLog.equals(action)) { // Get updateLog
+                viewLogs("update");
+            }
 
-
-            }
-            if (action == panel.query) {
-                String query = panel.textQuery.getText();
-                GUI.gest.doQuery(query);
-                panel.textQuery.setText("");
-            }
-            if (action == panel.update) {
-                String update = panel.textUpdate.getText();
-                GUI.gest.doUpdate(update);
-                panel.textUpdate.setText("");
-            }
-        } else {
-            if (action == panel.buttonSignIn) {
+        } else { // Disconnected database:
+            if (action == PrincipalPanel.buttonSignIn) { // Connect code
                 connect();
-
             }
-            if (action == panel.localhost) {
+            if (action == PrincipalPanel.localhost) { // Ip is localhost code
                 if (address == null) {
-                    panel.ip.setBackground(Color.DARK_GRAY.darker());
-                    panel.port.setBackground(Color.DARK_GRAY.darker());
+                    PrincipalPanel.ip.setBackground(Color.DARK_GRAY.darker());
+                    PrincipalPanel.port.setBackground(Color.DARK_GRAY.darker());
                     address = "localhost:3306";
                 } else {
-                    panel.ip.setBackground(Color.WHITE);
-                    panel.port.setBackground(Color.WHITE);
+                    PrincipalPanel.ip.setBackground(Color.WHITE);
+                    PrincipalPanel.port.setBackground(Color.WHITE);
                     address = null;
                 }
             }
-            if (action == panel.remember) {
+            if (action == PrincipalPanel.remember) {
                 remember = !remember;
             }
         }
     }
 
     private void connect() { // Initial Button Code
-        address = (address == null) ? panel.ip.getText() + ":" + panel.port.getText() : address;
-        String user = panel.user.getText();
-        String pass = panel.pass.getText();
-        db = panel.db.getText();
+        address = (address == null) ? PrincipalPanel.ip.getText() + ":" + PrincipalPanel.port.getText() : address;
+        String user = PrincipalPanel.user.getText();
+        String pass = PrincipalPanel.pass.getText();
+        db = PrincipalPanel.db.getText();
         boolean res = GUI.gest.getConnection(user, pass, db, address);
         String msj;
-        if (res) {
-
+        if (res) { // Connected code
+            // Remember data
             if (remember) {
-                RememberFile file = new RememberFile(user, pass, db, address);
+                new RememberFile(user, pass, db, address);
             }
-
-            msj = "Connected to " + panel.db.getText();
-            panel.c = Color.GREEN;
-            panel.setBackground(panel.c);
-
-            panel.remove(panel.buttonSignIn);
-            panel.remove(panel.user);
-            panel.remove(panel.pass);
-            panel.remove(panel.db);
-            panel.remove(panel.ip);
-            panel.remove(panel.port);
-            panel.remove(panel.localhost);
-            panel.remove(panel.remember);
-
-            panel.add(panel.disconnect);
-            panel.add(panel.textQuery);
-            panel.add(panel.textUpdate);
-            panel.add(panel.query);
-            panel.add(panel.update);
-            panel.add(panel.queryLog);
-            panel.add(panel.updateLog);
-
-
+            // Mod panel
+            msj = "Connected to " + PrincipalPanel.db.getText();
+            PrincipalPanel.c = Color.GREEN;
+            panel.setBackground(PrincipalPanel.c);
+            panel.remove(PrincipalPanel.buttonSignIn);
+            panel.remove(PrincipalPanel.user);
+            panel.remove(PrincipalPanel.pass);
+            panel.remove(PrincipalPanel.db);
+            panel.remove(PrincipalPanel.ip);
+            panel.remove(PrincipalPanel.port);
+            panel.remove(PrincipalPanel.localhost);
+            panel.remove(PrincipalPanel.remember);
+            panel.add(PrincipalPanel.disconnect);
+            panel.add(PrincipalPanel.textQuery);
+            panel.add(PrincipalPanel.textUpdate);
+            panel.add(PrincipalPanel.query);
+            panel.add(PrincipalPanel.update);
+            panel.add(PrincipalPanel.queryLog);
+            panel.add(PrincipalPanel.updateLog);
             setLocationRelativeTo(null);
-            setSize(300, 600);
-            panel.connected = true;
-        } else {
+            setSize(300, 400);
+            PrincipalPanel.connected = true;
+        } else { // Error in conection
             msj = "Not Connected";
-            if (panel.error)
-                panel.c = panel.c.darker();
+            if (PrincipalPanel.error)
+                PrincipalPanel.c = PrincipalPanel.c.darker();
             else {
-                panel.c = Color.RED;
-                panel.error = true;
+                PrincipalPanel.c = Color.RED;
+                PrincipalPanel.error = true;
             }
-            panel.setBackground(panel.c);
+            panel.setBackground(PrincipalPanel.c);
         }
-        panel.msj = msj;
+        PrincipalPanel.msj = msj;
     }
 
+    private void viewLogs(String mode) { // Code to create update/queries log
+        String[] mL = {db + mode + " log"};
+        Object[][] mLog;
+        LinkedList<String> updateList = new LinkedList<>();
+        JTable table;
+        File f = new File("internalFiles/" + mode + db + ".txt"); // Getting log
+        if (f.exists()) {
+            // Reading data:
+            try {
+                Scanner reader = new Scanner(f);
+                while (reader.hasNextLine()) {
+                    updateList.addLast(reader.nextLine());
+                }
+            } catch (FileNotFoundException fileNotFoundException) {
+                PrincipalPanel.console.append("Cannot get" + mode + " log...\n");
+            }
+            // Saving data:
+            mLog = new String[updateList.size()][1];
+            int i = 0;
+            for (String log : updateList) {
+                mLog[i][0] = log;
+                i++;
+            }
+            table = new JTable(mLog, mL);
+        } else {
+            table = new JTable(new Object[0][0], mL);
+        }
+        // Creating table:
+        table.setPreferredScrollableViewportSize(table.getPreferredSize());
+        JScrollPane scrollPane = new JScrollPane(table);
+        TableFrame frame = new TableFrame();
+        frame.add(scrollPane, BorderLayout.CENTER);
+        frame.setSize(180, 40 * Math.max(updateList.size() + 1, 2));
+        frame.setLocationRelativeTo(null);
+        // If you select a row it will be writting in the textfield:
+        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent event) {
+                if (mode.equals("query")) {
+                    PrincipalPanel.textQuery.setText(table.getValueAt(table.getSelectedRow(), 0).toString());
+                } else {
+                    PrincipalPanel.textUpdate.setText(table.getValueAt(table.getSelectedRow(), 0).toString());
+                }
+            }
+        });
+
+    }
+
+    private void createLogs() {
+        if (!queries.isEmpty()) {
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter("internalFiles/query" + db + ".txt"));
+                for (String query : queries) {
+                    writer.write(query + "\n");
+                }
+                writer.close();
+            } catch (IOException ioException) {
+                PrincipalPanel.console.append("Error saving queries...\n");
+            }
+        }
+
+        if (!updates.isEmpty()) {
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter("internalFiles/update" + db + ".txt"));
+                for (String update : updates) {
+                    writer.write(update + "\n");
+                }
+                writer.close();
+            } catch (IOException ioException) {
+                PrincipalPanel.console.append("Error saving updates...\n");
+            }
+        }
+    }
 }
 
