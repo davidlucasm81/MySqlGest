@@ -2,33 +2,47 @@ package MySqlGest;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.LinkedList;
+import java.util.Scanner;
 
-public class PrincipalPanel extends JPanel {
+public class PrincipalPanel extends JPanel implements ActionListener {
     // Intern Atributes:
-    static public JButton buttonSignIn = new JButton("Submit");
-    static public JButton query = new JButton("Do query");
-    static public JButton update = new JButton("Do update");
-    static public JButton disconnect = new JButton("Disconnect");
-    static public JButton queryLog = new JButton();
-    static public JButton updateLog = new JButton();
 
-    static public JCheckBox localhost = new JCheckBox("Localhost");
-    static public JCheckBox remember = new JCheckBox("Remember");
+    private String address;
+    private String dbName;
+    private boolean remember;
 
-    static public JTextField user = new JTextField();
-    static public JTextField db = new JTextField();
-    static public JTextField ip = new JTextField();
-    static public JTextField port = new JTextField();
-    static public JTextField textQuery = new JTextField();
-    static public JTextField textUpdate = new JTextField();
-    static public JPasswordField pass = new JPasswordField();
 
-    static public String msj;
-    static public boolean connected = false;
-    static public boolean error = false;
-    static public Color c;
+    private final LinkedList<String> queries;
+    private final LinkedList<String> updates;
 
-    static JTextArea console;
+    private final JButton buttonSignIn = new JButton("Submit");
+    private final JButton query = new JButton("Do query");
+    private final JButton update = new JButton("Do update");
+    private final JButton disconnect = new JButton("Disconnect");
+    private final JButton queryLog = new JButton();
+    private final JButton updateLog = new JButton();
+
+    private final JCheckBox localhost = new JCheckBox("Localhost");
+    private final JCheckBox rememberBox = new JCheckBox("Remember");
+
+    private final JTextField user = new JTextField();
+    private final JTextField db = new JTextField();
+    private final JTextField ip = new JTextField();
+    private final JTextField port = new JTextField();
+    private static final JTextField textQuery = new JTextField();
+    private static final JTextField textUpdate = new JTextField();
+    private final JPasswordField pass = new JPasswordField();
+
+    private String msj;
+    private boolean connected = false;
+    private boolean error = false;
+    private Color c;
+
+    private static JTextArea console;
 
     public PrincipalPanel() {
         //Graphics:
@@ -53,13 +67,39 @@ public class PrincipalPanel extends JPanel {
         add(user);
         add(pass);
         add(db);
-        add(remember);
+        add(rememberBox);
+        queries = new LinkedList<>();
+        updates = new LinkedList<>();
         //Connection:
         console = new JTextArea();
         add(console);
         console.setFocusable(false);
         console.setBackground(c);
         console.setForeground(Color.BLACK);
+        // ActionListeners:
+        buttonSignIn.addActionListener(this);
+        disconnect.addActionListener(this);
+        query.addActionListener(this);
+        update.addActionListener(this);
+        localhost.addActionListener(this);
+        rememberBox.addActionListener(this);
+        queryLog.addActionListener(this);
+        updateLog.addActionListener(this);
+        // Remember code:
+        File f = new File("src/internalFiles/remember.txt");
+        if (f.exists()) {
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader("src/internalFiles/remember.txt"));
+                user.setText(reader.readLine());
+                pass.setText(reader.readLine());
+                db.setText(reader.readLine());
+                String address = reader.readLine();
+                ip.setText(address.substring(0, address.length() - 5));
+                port.setText(address.substring(address.length() - 4));
+            } catch (IOException e) {
+                console.append("Cannot Read\n");
+            }
+        }
     }
 
     public void paintComponent(Graphics g) {
@@ -92,8 +132,8 @@ public class PrincipalPanel extends JPanel {
             port.setBounds(170, 180, 50, 20);
             //Initial Button:
             buttonSignIn.setBounds(50, 240, 80, 21);
-            remember.setBounds(140, 245, 100, 12);
-            remember.setBackground(c);
+            rememberBox.setBounds(140, 245, 100, 12);
+            rememberBox.setBackground(c);
             //Connection:
             console.setBounds(10, 325, 280, 100);
         } else {
@@ -123,5 +163,168 @@ public class PrincipalPanel extends JPanel {
             //Connection:
             console.setBounds(10, 300, 280, 100);
         }
+    }
+
+    public void connect() {
+        address = (address == null) ? ip.getText() + ":" + port.getText() : address;
+        String userName = user.getText();
+        String passName = String.valueOf(pass.getPassword());
+        dbName = db.getText();
+        boolean res = GUI.gest.getConnection(userName, passName, dbName, address);
+        if (res) { // Connected code
+            // Remember data
+            if (remember) {
+                new RememberFile(userName, passName, dbName, address);
+            }
+            // Mod panel
+            msj = "Connected to " + db.getText();
+            c = Color.GREEN;
+            setBackground(c);
+            remove(buttonSignIn);
+            remove(user);
+            remove(pass);
+            remove(db);
+            remove(ip);
+            remove(port);
+            remove(localhost);
+            remove(rememberBox);
+            add(disconnect);
+            add(textQuery);
+            add(textUpdate);
+            add(query);
+            add(update);
+            add(queryLog);
+            add(updateLog);
+            connected = true;
+        } else { // Error in conection
+            msj = "Not Connected";
+            if (error)
+                c = c.darker();
+            else {
+                c = Color.RED;
+                error = true;
+            }
+            setBackground(c);
+        }
+    }
+
+    public void actionPerformed(ActionEvent e) { // It controls the response of the buttons, textfields ... etc
+        // Getting Action:
+        Object action = e.getSource();
+        console.setText("");
+        if (connected) { // Connected to the database
+            if (disconnect.equals(action)) { // Disconnecting code
+                int cont = 0;
+                do {
+                    console.append("Disconecting...\n");
+                    cont++;
+                }
+                while (!(GUI.gest.disconnect()) && cont < 3);
+                createLogs();
+                System.exit(0);
+            }
+            if (query.equals(action)) { // Do query
+                String query = textQuery.getText();
+                if (GUI.gest.doQuery(query))
+                    queries.addLast(query);
+                textQuery.setText("");
+            }
+            if (update.equals(action)) { // Do update
+                String update = textUpdate.getText();
+                if (GUI.gest.doUpdate(update))
+                    updates.addLast(update);
+                textUpdate.setText("");
+            }
+            if (queryLog.equals(action)) { // Get queryLog
+                viewLogs("query");
+            }
+            if (updateLog.equals(action)) { // Get updateLog
+                viewLogs("update");
+            }
+
+        } else { // Disconnected database:
+            if (action == buttonSignIn) { // Connect code
+                connect();
+            }
+            if (action == localhost) { // Ip is localhost code
+                if (address == null) {
+                    ip.setBackground(Color.DARK_GRAY.darker());
+                    port.setBackground(Color.DARK_GRAY.darker());
+                    address = "localhost:3306";
+                } else {
+                    ip.setBackground(Color.WHITE);
+                    port.setBackground(Color.WHITE);
+                    address = null;
+                }
+            }
+            if (action == rememberBox) {
+                remember = !remember;
+            }
+        }
+    }
+
+
+    private void viewLogs(String mode) { // Code to create update/queries log
+        String[] mL = {dbName + mode + " log"};
+        Object[][] mLog;
+        LinkedList<String> updateList = new LinkedList<>();
+        File f = new File("src/internalFiles/" + mode + dbName + ".txt"); // Getting log
+        if (f.exists()) {
+            // Reading data:
+            try {
+                Scanner reader = new Scanner(f);
+                while (reader.hasNextLine()) {
+                    updateList.addLast(reader.nextLine());
+                }
+            } catch (FileNotFoundException fileNotFoundException) {
+                appendToConsole("Cannot get" + mode + " log...\n");
+            }
+            // Saving data:
+            mLog = new String[updateList.size()][1];
+            int i = 0;
+            for (String log : updateList) {
+                mLog[i][0] = log;
+                i++;
+            }
+            new MyTable(mLog, mL, mode);
+        } else {
+            new MyTable(new Object[1][1], mL, mode);
+        }
+    }
+
+    private void createLogs() {
+        if (!queries.isEmpty()) {
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter("src/internalFiles/query" + dbName + ".txt"));
+                for (String query : queries) {
+                    writer.write(query + "\n");
+                }
+                writer.close();
+            } catch (IOException ioException) {
+                appendToConsole("Error saving queries...\n");
+            }
+        }
+
+        if (!updates.isEmpty()) {
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter("src/internalFiles/update" + dbName + ".txt"));
+                for (String update : updates) {
+                    writer.write(update + "\n");
+                }
+                writer.close();
+            } catch (IOException ioException) {
+                appendToConsole("Error saving updates...\n");
+            }
+        }
+    }
+
+    public static void setTextQuery (String query){
+        textQuery.setText(query);
+    }
+    public static void setTextUpdate(String update) {
+        textUpdate.setText(update);
+    }
+    public static void appendToConsole(String data){
+        console.append(data);
     }
 }

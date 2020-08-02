@@ -1,7 +1,5 @@
 package MySqlGest;
 
-import javax.swing.*;
-import java.awt.*;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -18,13 +16,13 @@ public class MySqlGest {
         try {
             Class.forName(driver);
             conn = DriverManager.getConnection(url, user, pass);
-            PrincipalPanel.console.append("Connect!\n");
+            PrincipalPanel.appendToConsole("Connect!\n");
             return true;
         } catch (SQLException e) {
-            PrincipalPanel.console.append("Error in connection.\nMore info: " + e.getMessage() + "\n");
+            PrincipalPanel.appendToConsole("Error in connection.\nMore info: " + e.getMessage() + "\n");
             return false;
         } catch (ClassNotFoundException f) {
-            PrincipalPanel.console.append("Error loading driver.\nMore info: " + f.getMessage() + "\n");
+            PrincipalPanel.appendToConsole("Error loading driver.\nMore info: " + f.getMessage() + "\n");
             return false;
         }
     }
@@ -32,13 +30,13 @@ public class MySqlGest {
     public boolean disconnect() {
         try {
             conn.close();
-            PrincipalPanel.console.append("Disconnect!\n");
+            PrincipalPanel.appendToConsole("Disconnect!\n");
             return true;
         } catch (SQLException e) {
-            PrincipalPanel.console.append("Error during disconnect.\nMore info: " + e.getMessage() + "\n");
+            PrincipalPanel.appendToConsole("Error during disconnect.\nMore info: " + e.getMessage() + "\n");
             return false;
         } catch (NullPointerException f) {
-            PrincipalPanel.console.append("You can not disconnect if you dont get a connection.\nMore info: " + f.getMessage() + "\n");
+            PrincipalPanel.appendToConsole("You can not disconnect if you dont get a connection.\nMore info: " + f.getMessage() + "\n");
             return false;
         }
     }
@@ -50,10 +48,10 @@ public class MySqlGest {
             showIt(rs);
             rs.close();
             st.close();
-            PrincipalPanel.console.append("Query Done!\n");
+            PrincipalPanel.appendToConsole("Query Done!\n");
             return true;
         } catch (SQLException e) {
-            PrincipalPanel.console.append("Error doing query.\nMore info: " + e.getMessage() + "\n");
+            PrincipalPanel.appendToConsole("Error doing query.\nMore info: " + e.getMessage() + "\n");
             return false;
         }
     }
@@ -63,10 +61,10 @@ public class MySqlGest {
             PreparedStatement pst = conn.prepareStatement(update);
             pst.executeUpdate();
             pst.close();
-            PrincipalPanel.console.append("Update Done!\n");
+            PrincipalPanel.appendToConsole("Update Done!\n");
             return true;
         } catch (SQLException e) {
-            PrincipalPanel.console.append("Error doing update.\nMore info: " + e.getMessage() + "\n");
+            PrincipalPanel.appendToConsole("Error doing update.\nMore info: " + e.getMessage() + "\n");
             return false;
         }
     }
@@ -77,6 +75,7 @@ public class MySqlGest {
         // Getting Column Names:
         for (int i = 1; i <= rs.getMetaData().getColumnCount(); i++) {
             columnNames[i - 1] = rs.getMetaData().getColumnName(i);
+
         }
         // Getting Data:
         int row = 0;
@@ -98,12 +97,6 @@ public class MySqlGest {
             }
         }
         // Creating table:
-        JTable table = new JTable(data, columnNames);
-        table.setPreferredScrollableViewportSize(table.getPreferredSize());
-        JScrollPane scrollPane = new JScrollPane(table);
-        TableFrame frame = new TableFrame();
-        frame.add(scrollPane, BorderLayout.CENTER);
-        frame.setSize(170 * rs.getMetaData().getColumnCount(), Math.min(50 * row, 900));
-        frame.setLocationRelativeTo(null);
+        new MyTable(data, columnNames, null);
     }
 }

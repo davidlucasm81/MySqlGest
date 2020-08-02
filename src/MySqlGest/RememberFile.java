@@ -10,13 +10,13 @@ public class RememberFile {
 
     public RememberFile(String user, String pass, String database, String address) {
         try {
-            remember = new File("internalFiles/remember.txt");;
-            BufferedWriter writer = new BufferedWriter(new FileWriter("internalFiles/remember.txt"));
+            remember = new File("src/internalFiles/remember.txt");
+            BufferedWriter writer = new BufferedWriter(new FileWriter("src/internalFiles/remember.txt"));
             writer.write(user + "\n" + pass + "\n" + database + "\n" + address + "\n");
             writer.close();
 
         } catch (IOException e) {
-            PrincipalPanel.console.append("Cannot Remember\n");
+            PrincipalPanel.appendToConsole("Cannot Remember\n");
         }
     }
 
