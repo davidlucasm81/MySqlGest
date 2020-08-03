@@ -38,16 +38,12 @@ public class PrincipalPanel extends JPanel implements ActionListener {
     private static final JTextArea textQuery = new JTextArea();
     private static final JTextArea textUpdate = new JTextArea();
     private final JPasswordField pass = new JPasswordField();
-    private final JButton settings = new JButton();
     //Console
     private static JTextArea console;
     //Images:
     private final Image background;
     private ImageIcon iconQuery;
     private ImageIcon iconUpdate;
-    private ImageIcon iconSettings;
-    //FriendlyFrame:
-    private FriendlyFrame fFrame;
     public PrincipalPanel() {
         //Connection:
         console = new JTextArea();
@@ -69,7 +65,6 @@ public class PrincipalPanel extends JPanel implements ActionListener {
         queryLog.addActionListener(this);
         updateLog.addActionListener(this);
         tablesButton.addActionListener(this);
-        settings.addActionListener(this);
         //Images:
         ImageIcon image = new ImageIcon("src/Images/Mysql_logo.jpeg");
         background = image.getImage();
@@ -83,11 +78,6 @@ public class PrincipalPanel extends JPanel implements ActionListener {
         Image imgU = iconUpdate.getImage();
         Image newimgU = imgU.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
         iconUpdate = new ImageIcon(newimgU);
-
-        iconSettings = new ImageIcon("src/Images/settings.jpeg");
-        Image imgS = iconSettings.getImage();
-        Image newimgS = imgS.getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
-        iconSettings = new ImageIcon(newimgS);
     }
 
     /**
@@ -163,7 +153,6 @@ public class PrincipalPanel extends JPanel implements ActionListener {
             add(queryLog);
             add(updateLog);
             add(tablesButton);
-            add(settings);
             // TextArea:
             textQuery.setLineWrap(true);
             textUpdate.setLineWrap(true);
@@ -224,8 +213,6 @@ public class PrincipalPanel extends JPanel implements ActionListener {
             updateLog.setBounds(210, 230, 20, 20);
             updateLog.setIcon(iconUpdate);
             tablesButton.setBounds(80, 270, 120, 21);
-            settings.setBounds(10,10,30,30);
-            settings.setIcon(iconSettings);
         }
     }
     /**
@@ -237,7 +224,6 @@ public class PrincipalPanel extends JPanel implements ActionListener {
      *          -> QueryLog Button: Calls "viewLog" method, creating the previous queries table
      *          -> UpdateLog Button: Calls "viewLog" method, creating the previous updates table
      *          -> TablesButton Button: Creates the table "Database Tables Name"
-     *          -> Setings Button: It opens the FriendlyPanel
      *      - If you are disconnected:
      *          -> SignIn Button: Calls "connected" method
      *          -> Localhost CheckBox: If you mark it, sets the ip and port to "localhost:3306", and clears it otherwise
@@ -261,12 +247,6 @@ public class PrincipalPanel extends JPanel implements ActionListener {
                 remove(queryLog);
                 remove(updateLog);
                 remove(tablesButton);
-                remove(settings);
-                if(fFrame!=null){
-                    fFrame.setVisible(false);
-                    fFrame.removeAll();
-                    fFrame=null;
-                }
                 for(MyTable table : tableList){
                     table.remove();
                 }
@@ -300,12 +280,6 @@ public class PrincipalPanel extends JPanel implements ActionListener {
                     i++;
                 }
                 tableList.addLast(new MyTable(tLog, columName, "tables"));
-            }
-            if(settings.equals(action)){
-                if(fFrame==null)
-                    fFrame = new FriendlyFrame();
-                else
-                    fFrame.setVisible(true);
             }
         } else { // Disconnected database:
             if (buttonSignIn.equals(action)) { // Connect code
