@@ -1,3 +1,6 @@
+/*
+    This class contains the principal frame of MySqlGest
+ */
 package MySqlGest;
 
 import javax.swing.*;

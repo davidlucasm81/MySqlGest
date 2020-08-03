@@ -1,3 +1,7 @@
+/*
+    This class contains all the code to access to the database, do queries... etc
+ */
+
 package MySqlGest;
 
 import java.sql.*;
@@ -8,7 +12,17 @@ public class MySqlGest {
     // Connection to the database:
     private Connection conn;
 
-    // PRE: Database created is required
+    /**
+     * PRE: Database created is required
+     *
+     * This method creates the connection to the database
+     *
+     * @param user     The name user
+     * @param pass     The password of the user
+     * @param db The name of the database
+     * @param address  The address (ip:port) from the database
+     * @return true if no error, false otherwise
+     */
     public boolean getConnection(String user, String pass, String db, String address) {
         String driver = "com.mysql.cj.jdbc.Driver";
         String anyTimeZone = "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC"; // AnyTimeZone permitied
@@ -27,6 +41,9 @@ public class MySqlGest {
         }
     }
 
+    /**
+     * This method disconnects the database
+     */
     public void disconnect() {
         try {
             conn.close();
@@ -38,6 +55,11 @@ public class MySqlGest {
         }
     }
 
+    /**
+     * Sends the query to the database and calls the method "showIt"
+     * @param query The query that you want to do
+     * @return true if no error, false otherwise
+     */
     public boolean doQuery(String query) {
         try {
             Statement st = conn.createStatement();
@@ -52,7 +74,11 @@ public class MySqlGest {
             return false;
         }
     }
-
+    /**
+     * Sends the update to the database
+     * @param update The update that you want to do
+     * @return true if no error, false otherwise
+     */
     public boolean doUpdate(String update) {
         try {
             PreparedStatement pst = conn.prepareStatement(update);
@@ -66,6 +92,10 @@ public class MySqlGest {
         }
     }
 
+    /**
+     *  It gets all the names of the Database tables
+     * @return A LinkedList of names
+     */
     public LinkedList<String> getDatabaseInfo() {
         LinkedList<String> result = new LinkedList<>();
         try {
@@ -79,7 +109,11 @@ public class MySqlGest {
         }
         return result;
     }
-
+    /**
+     *  It gets all the atributes of a table
+     * @param table The table that you want to gete the atributes
+     * @return A matrix of atributes
+     */
     public Object[][] getAtributes(String table) {
         Object[][] result = null;
         try {
@@ -95,6 +129,11 @@ public class MySqlGest {
         return result;
     }
 
+    /**
+     * This method gets all the data from the query, saves them in a data structure and print them in a JTable
+     * @param rs The resultset from the query
+     * @throws SQLException Pray for not see that exception
+     */
     private void showIt(ResultSet rs) throws SQLException {
         String[] columnNames = new String[rs.getMetaData().getColumnCount()];
         HashMap<Integer, LinkedList<Object>> map = new HashMap<>(); // It contains, temporary, the elements of the query

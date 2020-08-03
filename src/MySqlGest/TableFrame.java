@@ -1,3 +1,6 @@
+/*
+    It's the frame of the tables
+ */
 package MySqlGest;
 
 import javax.swing.*;

@@ -1,3 +1,6 @@
+/*
+    It launches the graphic interface
+ */
 package MySqlGest;
 
 public class GUI {
