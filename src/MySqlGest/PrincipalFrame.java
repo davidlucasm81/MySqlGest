@@ -19,7 +19,7 @@ public class PrincipalFrame extends JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
         // Icon:
-        Image image = new ImageIcon("src/Images/myPassion.jpg").getImage();
+        Image image = new ImageIcon(getClass().getClassLoader().getResource("myPassion.jpg")).getImage();
         setIconImage(image);
     }
 

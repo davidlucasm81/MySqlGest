@@ -6,6 +6,10 @@ package MySqlGest;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class RememberFile {
     /**
@@ -16,9 +20,11 @@ public class RememberFile {
      */
     public RememberFile(String user, String pass, String database, String address) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("src/internalFiles/remember.txt"));
+            URL url = getClass().getClassLoader().getResource("remember.txt");
+            BufferedWriter writer = new BufferedWriter(new FileWriter(url.getFile()));
             writer.write(user + "\n" + pass + "\n" + database + "\n" + address + "\n");
             writer.close();
+
 
         } catch (IOException e) {
             PrincipalPanel.appendToConsole("Cannot Remember\n");

@@ -2,14 +2,20 @@
     The main panel, it controlls everything. Below I will describe all of this class
  */
 package MySqlGest;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.Scanner;
+
 public class PrincipalPanel extends JPanel implements ActionListener {
     // Intern Atributes:
     //Database atributes:
@@ -44,6 +50,7 @@ public class PrincipalPanel extends JPanel implements ActionListener {
     private final Image background;
     private ImageIcon iconQuery;
     private ImageIcon iconUpdate;
+
     public PrincipalPanel() {
         //Connection:
         console = new JTextArea();
@@ -66,18 +73,18 @@ public class PrincipalPanel extends JPanel implements ActionListener {
         updateLog.addActionListener(this);
         tablesButton.addActionListener(this);
         //Images:
-        ImageIcon image = new ImageIcon("src/Images/Mysql_logo.jpeg");
+        ImageIcon image = new ImageIcon(getClass().getClassLoader().getResource("Mysql_logo.jpeg"));
         background = image.getImage();
 
-        iconQuery = new ImageIcon("src/Images/queryIcon.jpg");
+        iconQuery = new ImageIcon(getClass().getClassLoader().getResource("queryIcon.jpg"));
         Image img = iconQuery.getImage();
-        Image newimg = img.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
-        iconQuery = new ImageIcon(newimg);
+        Image newImg = img.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
+        iconQuery = new ImageIcon(newImg);
 
-        iconUpdate = new ImageIcon("src/Images/updateIcon.jpg");
+        iconUpdate = new ImageIcon(getClass().getClassLoader().getResource("updateIcon.jpg"));
         Image imgU = iconUpdate.getImage();
-        Image newimgU = imgU.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
-        iconUpdate = new ImageIcon(newimgU);
+        Image newImgU = imgU.getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
+        iconUpdate = new ImageIcon(newImgU);
     }
 
     /**
@@ -105,21 +112,30 @@ public class PrincipalPanel extends JPanel implements ActionListener {
         updates = new LinkedList<>();
         tableList = new LinkedList<>();
         // Remember code:
-        File f = new File("src/internalFiles/remember.txt");
-        if (f.exists()) {
-            try {
-                BufferedReader reader = new BufferedReader(new FileReader("src/internalFiles/remember.txt"));
-                user.setText(reader.readLine());
-                pass.setText(reader.readLine());
-                db.setText(reader.readLine());
-                String address = reader.readLine();
-                ip.setText(address.substring(0, address.length() - 5));
-                port.setText(address.substring(address.length() - 4));
-            } catch (IOException e) {
-                console.append("Cannot Read\n");
+        URL url = getClass().getClassLoader().getResource("remember.txt");
+        if(url!=null){
+            File f = new File(url.getFile());
+            if (f.exists()) {
+                try {
+                    BufferedReader reader = new BufferedReader(new FileReader(getClass().getClassLoader().getResource("remember.txt").getFile()));
+                    String userName = reader.readLine();
+                    if(userName!=null){
+                        user.setText(userName);
+                        pass.setText(reader.readLine());
+                        db.setText(reader.readLine());
+                        String address = reader.readLine();
+                        ip.setText(address.substring(0, address.length() - 5));
+                        port.setText(address.substring(address.length() - 4));
+                    }
+
+                } catch (IOException e) {
+                    console.append("Cannot Read\n");
+                }
             }
         }
+
     }
+
     /**
      * Connected contains all the "connect" code. It takes care of connecting to the database,
      * adds MySqlGest buttons and removes login buttons.
@@ -159,11 +175,12 @@ public class PrincipalPanel extends JPanel implements ActionListener {
             textQuery.setFont(new Font("Calibri", Font.PLAIN, 15));
             textUpdate.setFont(new Font("Calibri", Font.PLAIN, 15));
             Border border = BorderFactory.createLineBorder(Color.BLACK);
-            textQuery.setBorder(BorderFactory.createCompoundBorder(border,BorderFactory.createEmptyBorder(1, 1, 1, 1)));
+            textQuery.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(1, 1, 1, 1)));
             textUpdate.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(1, 1, 1, 1)));
             tablesNames = GUI.gest.getDatabaseInfo();
         }
     }
+
     /**
      * This method "paint" the background, locate the buttons and set texts
      *
@@ -215,19 +232,21 @@ public class PrincipalPanel extends JPanel implements ActionListener {
             tablesButton.setBounds(80, 270, 120, 21);
         }
     }
+
     /**
      * This method have soo much code, so:
-     *      - If you are connected in the database:
-     *          -> Disconnect Button: Removes MySqlGest buttons, call "disconnect" method, and closes open tables
-     *          -> Query Button: Realizes the query of the Query Text Area and clean it
-     *          -> Update Button: Realizes the update of the Update Text Area and clean it
-     *          -> QueryLog Button: Calls "viewLog" method, creating the previous queries table
-     *          -> UpdateLog Button: Calls "viewLog" method, creating the previous updates table
-     *          -> TablesButton Button: Creates the table "Database Tables Name"
-     *      - If you are disconnected:
-     *          -> SignIn Button: Calls "connected" method
-     *          -> Localhost CheckBox: If you mark it, sets the ip and port to "localhost:3306", and clears it otherwise
-     *          -> RememberBox CheckBox: Actives the remember code
+     * - If you are connected in the database:
+     * -> Disconnect Button: Removes MySqlGest buttons, call "disconnect" method, and closes open tables
+     * -> Query Button: Realizes the query of the Query Text Area and clean it
+     * -> Update Button: Realizes the update of the Update Text Area and clean it
+     * -> QueryLog Button: Calls "viewLog" method, creating the previous queries table
+     * -> UpdateLog Button: Calls "viewLog" method, creating the previous updates table
+     * -> TablesButton Button: Creates the table "Database Tables Name"
+     * - If you are disconnected:
+     * -> SignIn Button: Calls "connected" method
+     * -> Localhost CheckBox: If you mark it, sets the ip and port to "localhost:3306", and clears it otherwise
+     * -> RememberBox CheckBox: Actives the remember code
+     *
      * @param e The action who invoked the method
      */
     public void actionPerformed(ActionEvent e) { // It controls the response of the buttons, textfields ... etc
@@ -247,10 +266,10 @@ public class PrincipalPanel extends JPanel implements ActionListener {
                 remove(queryLog);
                 remove(updateLog);
                 remove(tablesButton);
-                for(MyTable table : tableList){
+                for (MyTable table : tableList) {
                     table.remove();
                 }
-                tableList=null;
+                tableList = null;
                 disconnected();
             }
             if (query.equals(action)) { // Do query
@@ -303,14 +322,15 @@ public class PrincipalPanel extends JPanel implements ActionListener {
     }
 
     /**
-     *  It create the tables to see the previous queries/updates
+     * It create the tables to see the previous queries/updates
+     *
      * @param mode It marks if it's queries or updates
      */
     private void viewLogs(String mode) {
         String[] mL = {mode + "_" + dbName + " log"};
         Object[][] mLog;
         LinkedList<String> updateList = new LinkedList<>();
-        File f = new File("src/internalFiles/" + mode + "_" + dbName + ".txt"); // Getting log
+        File f = new File("res/" + mode + "_" + dbName + ".txt"); // Getting log
         if (f.exists()) {
             // Reading data:
             try {
@@ -343,7 +363,7 @@ public class PrincipalPanel extends JPanel implements ActionListener {
     private void createLogs() {
         if (!queries.isEmpty()) {
             try {
-                BufferedWriter writerQuery = new BufferedWriter(new FileWriter("src/internalFiles/query_" + dbName + ".txt"));
+                BufferedWriter writerQuery = new BufferedWriter(new FileWriter("res/query_" + dbName + ".txt"));
                 for (String query : queries) {
                     writerQuery.write(query + "\n");
                 }
@@ -351,11 +371,12 @@ public class PrincipalPanel extends JPanel implements ActionListener {
             } catch (IOException ioException) {
                 appendToConsole("Error saving queries...\n");
             }
+
         }
 
         if (!updates.isEmpty()) {
             try {
-                BufferedWriter writerUpdate = new BufferedWriter(new FileWriter("src/internalFiles/update_" + dbName + ".txt"));
+                BufferedWriter writerUpdate =  new BufferedWriter(new FileWriter("res/update" + dbName + ".txt"));
                 for (String update : updates) {
                     writerUpdate.write(update + "\n");
                 }

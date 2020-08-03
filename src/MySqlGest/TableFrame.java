@@ -14,7 +14,7 @@ public class TableFrame extends JFrame {
         setTitle("Table");
         setLocationRelativeTo(null);
         // Icon:
-        Image image = new ImageIcon("src/Images/myPassion.jpg").getImage();
+        Image image = new ImageIcon(getClass().getClassLoader().getResource("myPassion.jpg")).getImage();
         setIconImage(image);
     }
 }
