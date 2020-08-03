@@ -2,28 +2,53 @@ package MySqlGest;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MyTable extends JTable {
+    private TableFrame frame;
     public MyTable(Object[][] data, String[] columnNames, String table) {
         super(data, columnNames);
         setPreferredScrollableViewportSize(getPreferredSize());
         JScrollPane scrollPane = new JScrollPane(this);
-        TableFrame frame = new TableFrame();
+        frame = new TableFrame();
         frame.add(scrollPane, BorderLayout.CENTER);
-        frame.setSize(170 * data[0].length, Math.min(50 * (data.length + 2), 900));
+        frame.setSize(200 * data[0].length, Math.min(30 * (data.length + 2), 900));
         frame.setLocationRelativeTo(null);
-        // If you select a row it will be writting in the textfield:
         if (table != null) {
-            getSelectionModel().addListSelectionListener(event -> {
-                if (table.equals("query")) {
-                    PrincipalPanel.setTextQuery(getValueAt(getSelectedRow(), 0).toString());
-                } else if (table.equals("update")) {
-                    PrincipalPanel.setTextUpdate(getValueAt(getSelectedRow(), 0).toString());
+            if (table.equals("atributes"))
+                frame.setLocation(frame.getX() + 250, frame.getY());
+            if (table.equals("tables")) {
+                frame.setLocation(frame.getX() - 250, frame.getY());
+            }
+            if (table.equals("query")) {
+                frame.setLocation(frame.getX(), frame.getY() + 270);
+            }
+            if (table.equals("update")) {
+                frame.setLocation(frame.getX(), frame.getY() - 270);
+            }
+            this.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent me) {
+                    if (me.getClickCount() == 2) {
+                        String click = getValueAt(getSelectedRow(), 0).toString();
+                        if (table.equals("query")) {
+                            PrincipalPanel.setTextQuery(click);
+                        } else if (table.equals("update")) {
+                            PrincipalPanel.setTextUpdate(click);
+                        } else if (table.equals("tables")) {
+                            Object[][] atributesData = GUI.gest.getAtributes(click);
+                            String[] columnName = {click + " atributes"};
+                            PrincipalPanel.tableList.addLast(new MyTable(atributesData, columnName, "atributes"));
+                        }
+                    }
                 }
             });
         }
     }
-
+    public void remove(){
+        frame.removeAll();
+        frame.setVisible(false);
+    }
     @Override
     public boolean isCellEditable(int row, int column) { // Disable changes
         return false;

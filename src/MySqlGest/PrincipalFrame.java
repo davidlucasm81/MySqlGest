@@ -4,9 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PrincipalFrame extends JFrame {
+
     public PrincipalFrame() {
         // Initial Panel:
-        add( new PrincipalPanel());
+        add(new PrincipalPanel());
         // Just frame:
         setSize(300, 425);
         setVisible(true);
@@ -18,5 +19,7 @@ public class PrincipalFrame extends JFrame {
         Image image = new ImageIcon("src/Images/myPassion.jpg").getImage();
         setIconImage(image);
     }
+
+
 }
 
