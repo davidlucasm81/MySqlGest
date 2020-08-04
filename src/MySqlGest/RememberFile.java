@@ -4,6 +4,7 @@
 package MySqlGest;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
@@ -20,8 +21,7 @@ public class RememberFile {
      */
     public RememberFile(String user, String pass, String database, String address) {
         try {
-            URL url = getClass().getClassLoader().getResource("remember.txt");
-            BufferedWriter writer = new BufferedWriter(new FileWriter(url.getFile()));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("remember.txt"));
             writer.write(user + "\n" + pass + "\n" + database + "\n" + address + "\n");
             writer.close();
 

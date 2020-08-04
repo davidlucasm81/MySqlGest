@@ -35,8 +35,8 @@ public class PrincipalPanel extends JPanel implements ActionListener {
     private final JButton queryLog = new JButton();
     private final JButton updateLog = new JButton();
     private final JButton tablesButton = new JButton("Show Tables");
-    private final JCheckBox localhost = new JCheckBox("Localhost");
-    private final JCheckBox rememberBox = new JCheckBox("Remember");
+    private  JCheckBox localhost = new JCheckBox("Localhost");
+    private  JCheckBox rememberBox = new JCheckBox("Remember");
     private final JTextField user = new JTextField();
     private final JTextField db = new JTextField();
     private final JTextField ip = new JTextField();
@@ -98,6 +98,10 @@ public class PrincipalPanel extends JPanel implements ActionListener {
         connected = false;
         remember = false;
         //Adding atributes:
+        rememberBox.setSelected(false);
+        localhost.setSelected(false);
+        ip.setBackground(Color.WHITE);
+        port.setBackground(Color.WHITE);
         add(localhost);
         add(ip);
         add(port);
@@ -112,12 +116,11 @@ public class PrincipalPanel extends JPanel implements ActionListener {
         updates = new LinkedList<>();
         tableList = new LinkedList<>();
         // Remember code:
-        URL url = getClass().getClassLoader().getResource("remember.txt");
-        if(url!=null){
-            File f = new File(url.getFile());
+
+            File f = new File("remember.txt");
             if (f.exists()) {
                 try {
-                    BufferedReader reader = new BufferedReader(new FileReader(getClass().getClassLoader().getResource("remember.txt").getFile()));
+                    BufferedReader reader = new BufferedReader(new FileReader("remember.txt"));
                     String userName = reader.readLine();
                     if(userName!=null){
                         user.setText(userName);
@@ -132,7 +135,7 @@ public class PrincipalPanel extends JPanel implements ActionListener {
                     console.append("Cannot Read\n");
                 }
             }
-        }
+
 
     }
 
@@ -330,7 +333,7 @@ public class PrincipalPanel extends JPanel implements ActionListener {
         String[] mL = {mode + "_" + dbName + " log"};
         Object[][] mLog;
         LinkedList<String> updateList = new LinkedList<>();
-        File f = new File("res/" + mode + "_" + dbName + ".txt"); // Getting log
+        File f = new File(mode + "_" + dbName + ".txt"); // Getting log
         if (f.exists()) {
             // Reading data:
             try {
@@ -363,7 +366,7 @@ public class PrincipalPanel extends JPanel implements ActionListener {
     private void createLogs() {
         if (!queries.isEmpty()) {
             try {
-                BufferedWriter writerQuery = new BufferedWriter(new FileWriter("res/query_" + dbName + ".txt"));
+                BufferedWriter writerQuery = new BufferedWriter(new FileWriter("query_" + dbName + ".txt"));
                 for (String query : queries) {
                     writerQuery.write(query + "\n");
                 }
@@ -376,7 +379,7 @@ public class PrincipalPanel extends JPanel implements ActionListener {
 
         if (!updates.isEmpty()) {
             try {
-                BufferedWriter writerUpdate =  new BufferedWriter(new FileWriter("res/update" + dbName + ".txt"));
+                BufferedWriter writerUpdate =  new BufferedWriter(new FileWriter("update_" + dbName + ".txt"));
                 for (String update : updates) {
                     writerUpdate.write(update + "\n");
                 }
